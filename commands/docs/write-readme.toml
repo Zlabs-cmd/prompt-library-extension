@@ -1,0 +1,17 @@
+prompt = """
+# Generate README
+
+Create a comprehensive and professional README.md for the following project. Include these sections:
+- Project Title & Description
+- Installation Instructions
+- Quick Start/Usage Examples
+- Key Features
+- Configuration Details
+- Contributing Guidelines
+- License Information
+
+Project description:
+{{args}}
+
+Ensure the README is well-formatted in Markdown and follows documentation best practices.
+"""

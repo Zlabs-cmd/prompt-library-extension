@@ -1,0 +1,14 @@
+prompt = """
+# Debug Error
+
+Diagnose and provide a fix for the following error. Analyze:
+- The error message and stack trace
+- The relevant source code
+- Potential root causes (environment, logic, data)
+- Similar known issues
+
+Error context:
+{{args}}
+
+Provide a step-by-step explanation of the cause and a corrected code snippet or configuration fix.
+"""

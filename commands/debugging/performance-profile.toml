@@ -1,0 +1,14 @@
+prompt = """
+# Performance Profiling
+
+Analyze the following performance profile or benchmark data. Identify:
+- Hot paths (functions where most time is spent)
+- Memory allocation spikes
+- Excessive I/O or network calls
+- Thread contention or blocking
+
+Profiling data:
+{{args}}
+
+Suggest specific optimizations based on the profiling results to resolve the performance issue.
+"""

@@ -1,0 +1,18 @@
+prompt = """
+# Best Practices Review
+
+Evaluate the following code against industry standard best practices and language-specific conventions. Focus on:
+- Readability and maintainability
+- Naming conventions
+- Code structure and organization
+- Error handling patterns
+- Documentation and comments
+- DRY (Don't Repeat Yourself) and SOLID principles
+
+Code to review:
+```
+{{args}}
+```
+
+Identify areas for improvement and suggest changes to make the code more idiomatic, clean, and professional.
+"""

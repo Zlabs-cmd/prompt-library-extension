@@ -1,0 +1,16 @@
+prompt = """
+# Write Technical Blog Post
+
+Draft an engaging and informative technical blog post about the following topic. Include:
+- A compelling title
+- A clear introduction that hooks the reader
+- Well-structured body sections with subheadings
+- Code snippets or examples to illustrate points
+- A summary or conclusion with key takeaways
+- Call to action (e.g., check out the code, follow for more)
+
+Topic and key points:
+{{args}}
+
+The tone should be professional yet accessible and enthusiastic.
+"""

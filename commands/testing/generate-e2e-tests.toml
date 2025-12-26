@@ -1,0 +1,15 @@
+prompt = """
+# Generate End-to-End Tests
+
+Create end-to-end (E2E) test scenarios for the following feature or user flow. Focus on:
+- User interaction sequences
+- Multi-component integration
+- Real-world usage patterns
+- UI state verification
+- Navigation and workflow completion
+
+Feature/Flow description:
+{{args}}
+
+Provide test scripts using popular tools like Playwright, Cypress, or Selenium where appropriate.
+"""

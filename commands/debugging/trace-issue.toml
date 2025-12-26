@@ -1,0 +1,14 @@
+prompt = """
+# Trace Issue
+
+Perform a root cause analysis for the following reported issue. Focus on:
+- Reproducing the problem
+- Tracing the data flow through the system
+- Identifying the exact point of failure
+- Considering side effects or race conditions
+
+Issue report:
+{{args}}
+
+Outline the investigative steps taken and clearly explain the underlying flaw that needs to be addressed.
+"""

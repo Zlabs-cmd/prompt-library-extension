@@ -1,0 +1,16 @@
+prompt = """
+# Design Database Schema
+
+Create a database schema design for the following application requirements. Focus on:
+- Entities and their attributes
+- Relationships (One-to-One, One-to-Many, Many-to-Many)
+- Normalization (and intentional de-normalization for performance)
+- Primary and Foreign keys
+- Necessary indexes for performance
+- Data types and constraints
+
+Requirements:
+{{args}}
+
+Provide a detailed schema description, ideally including SQL DDL or an ER diagram description.
+"""

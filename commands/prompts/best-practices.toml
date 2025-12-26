@@ -1,0 +1,15 @@
+prompt = """
+# Prompt Engineering Best Practices
+
+Provide a guide on effective prompt engineering for the following scenario or goal. Focus on:
+- Framing the request correctly
+- Using structure (headers, lists) to guide the AI
+- Avoiding ambiguity
+- Iterative refinement techniques
+- Safety and bias considerations
+
+Goal/Scenario:
+{{args}}
+
+Provide actionable tips that a user can immediately apply to get better results.
+"""

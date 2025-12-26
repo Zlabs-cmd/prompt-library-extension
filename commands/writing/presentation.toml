@@ -1,0 +1,16 @@
+prompt = """
+# Create Presentation Outline
+
+Generate a detailed outline for a presentation on the following topic. Include:
+- Title and Hook
+- High-level agenda
+- Main points for each slide/section
+- Key visuals or diagrams to include
+- Engaging questions for the audience
+- A strong concluding message
+
+Topic and goal:
+{{args}}
+
+Organize the flow logically to keep the audience engaged and informed.
+"""

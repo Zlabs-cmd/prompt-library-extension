@@ -1,0 +1,15 @@
+prompt = """
+# Create Prompt Template
+
+Design a reusable prompt template for the following task. Ensure it:
+- Uses clear placeholders like {{args}} for user input
+- Provides a strong persona or context
+- Includes specific output format instructions
+- Sets clear constraints or quality bars
+- Is versatile enough for multiple related use cases
+
+Task description:
+{{args}}
+
+Provide the template and a few examples of how it would be filled.
+"""

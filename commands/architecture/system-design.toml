@@ -1,0 +1,16 @@
+prompt = """
+# System Architecture Design
+
+Design a high-level system architecture for the following project. Consider:
+- Core components and their responsibilities
+- Data flow and communication protocols
+- Scalability and availability strategies
+- Technology stack recommendations
+- Security and deployment considerations
+- External integrations
+
+Project goals:
+{{args}}
+
+Provide a clear architectural overview, explaining the rationale behind the key decisions.
+"""

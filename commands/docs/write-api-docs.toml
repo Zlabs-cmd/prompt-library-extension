@@ -1,0 +1,18 @@
+prompt = """
+# Write API Documentation
+
+Generate detailed API documentation based on the following code or specification. For each endpoint or function, include:
+- Description of purpose
+- Endpoint/Function signature
+- Parameters/Arguments (types, descriptions, requirements)
+- Request/Input examples
+- Response/Output examples (success and error states)
+- Status codes or exceptions
+
+Input:
+```
+{{args}}
+```
+
+Format the documentation clearly, ideally using a format like OpenAPI/Swagger or standard technical documentation style.
+"""

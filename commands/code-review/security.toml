@@ -1,0 +1,18 @@
+prompt = """
+# Security Code Review
+
+Perform a deep security analysis of the following code. Focus on:
+- Input validation and sanitization
+- Common vulnerabilities (SQL Injection, XSS, CSRF, etc.)
+- Authentication and authorization flaws
+- Insecure data storage or transmission
+- Use of outdated or insecure libraries
+- Exposure of sensitive information (secrets, API keys)
+
+Code to review:
+```
+{{args}}
+```
+
+Provide a detailed report identifying vulnerabilities, explaining their impact, and offering secure code alternatives.
+"""

@@ -1,0 +1,15 @@
+prompt = """
+# Compare Technologies
+
+Provide a side-by-side comparison of the following technologies (e.g., frameworks, languages, tools). Evaluate them on:
+- Learning curve
+- Performance and scalability
+- Community support and ecosystem
+- Best use cases for each
+- Pros and cons
+
+Technologies to compare:
+{{args}}
+
+Provide a clear recommendation on which to choose based on different project needs.
+"""

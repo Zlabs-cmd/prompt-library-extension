@@ -1,0 +1,15 @@
+prompt = """
+# Draft Professional Email
+
+Draft a clear, professional, and effective email based on the following context. Consider:
+- The audience (colleague, manager, client)
+- The core message or request
+- The desired tone (formal, semi-formal)
+- A clear subject line
+- A professional greeting and closing
+
+Context:
+{{args}}
+
+Ensure the email is concise and easy for the recipient to act upon.
+"""

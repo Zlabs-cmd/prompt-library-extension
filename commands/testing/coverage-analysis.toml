@@ -1,0 +1,14 @@
+prompt = """
+# Coverage Analysis
+
+Analyze the relationship between the following code and its tests. Identify:
+- Unchecked logical branches
+- Untested functions or methods
+- Scenarios that are missing from the current test suite
+- Areas of high complexity that lack sufficient verification
+
+Code and Tests:
+{{args}}
+
+Provide a prioritized list of missing tests to improve overall confidence in the code.
+"""

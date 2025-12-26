@@ -1,0 +1,14 @@
+prompt = """
+# Suggest Design Patterns
+
+Recommend appropriate software design patterns for the following problem or code structure. For each pattern:
+- Name of the pattern
+- Why it fits this specific scenario
+- Pros and cons in this context
+- A high-level example of how it would be implemented
+
+Scenario:
+{{args}}
+
+Focus on patterns that improve maintainability, flexibility, and code reuse.
+"""

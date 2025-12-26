@@ -1,0 +1,16 @@
+prompt = """
+# Identify Edge Cases
+
+Analyze the following logic and identify potential edge cases, boundary conditions, and unexpected inputs that could lead to failures. For each case:
+- Describe the input/scenario
+- Explain why it's an edge case
+- Predict the potential failure or bug
+- Suggest a test case to cover it
+
+Logic/Code:
+```
+{{args}}
+```
+
+Focus on security, reliability, and robustness.
+"""

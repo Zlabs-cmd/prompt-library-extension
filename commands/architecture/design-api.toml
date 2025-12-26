@@ -1,0 +1,16 @@
+prompt = """
+# Design API
+
+Design a RESTful API based on the following requirements. Include:
+- Resource endpoints (URLs)
+- HTTP methods (GET, POST, PUT, DELETE, etc.)
+- Request and response payloads (JSON)
+- Authentication and authorization strategy
+- Error handling and status codes
+- Pagination and filtering strategy
+
+Requirements:
+{{args}}
+
+Provide a clear and concise API specification, ideally in a structured format.
+"""

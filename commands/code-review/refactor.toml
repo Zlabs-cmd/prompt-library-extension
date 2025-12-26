@@ -1,0 +1,17 @@
+prompt = """
+# Refactoring Suggestions
+
+Suggest structural improvements for the following code to enhance its design without changing its external behavior. Focus on:
+- Reducing complexity
+- Improving modularity
+- Decoupling components
+- Enhancing testability
+- Eliminating code smells
+
+Code to refactor:
+```
+{{args}}
+```
+
+Provide a refactored version of the code and explain the architectural benefits of the changes.
+"""

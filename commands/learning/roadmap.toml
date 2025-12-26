@@ -1,0 +1,14 @@
+prompt = """
+# Create Learning Roadmap
+
+Generate a structured learning path to master the following technology or skill. Break it down into:
+- Phase 1: Foundations (Core concepts, setup)
+- Phase 2: Intermediate (Common patterns, essential libraries)
+- Phase 3: Advanced (Optimization, complex architectures, deep dives)
+- Recommended resources (documentation, courses, projects to build)
+
+Topic:
+{{args}}
+
+Provide a clear progression that builds confidence and practical ability.
+"""

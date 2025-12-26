@@ -1,0 +1,15 @@
+prompt = """
+# Improve Prompt
+
+Analyze and refine the following prompt to achieve better, more consistent, and more relevant results from an AI. Apply prompt engineering principles:
+- Be more specific and descriptive
+- Add structure and formatting
+- Provide clearer instructions or constraints
+- Incorporate role-playing if appropriate (e.g., "Act as a...")
+- Suggest few-shot examples if helpful
+
+Original Prompt:
+{{args}}
+
+Provide the improved version and explain the reasoning behind the changes.
+"""

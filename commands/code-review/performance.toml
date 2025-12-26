@@ -1,0 +1,18 @@
+prompt = """
+# Performance Optimization Review
+
+Analyze the following code for performance bottlenecks and optimization opportunities. Consider:
+- Time complexity (Big O)
+- Memory usage and potential leaks
+- Inefficient loops or recursion
+- Unnecessary computations or database queries
+- I/O blocking operations
+- Resource management (connections, file handles)
+
+Code to review:
+```
+{{args}}
+```
+
+Provide specific recommendations for improving performance, including optimized code snippets and an explanation of the expected gains.
+"""

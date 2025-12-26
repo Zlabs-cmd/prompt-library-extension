@@ -1,0 +1,17 @@
+prompt = """
+# Generate Unit Tests
+
+Create a complete unit test suite for the following code. Use the appropriate testing framework for the language (e.g., Jest, Pytest, JUnit). Include:
+- Happy path scenarios
+- Edge cases and boundary values
+- Error conditions and exceptions
+- Mocking of external dependencies if necessary
+- Assertions for all key outputs/behaviors
+
+Code to test:
+```
+{{args}}
+```
+
+Ensure the tests are well-structured, easy to run, and provide good coverage.
+"""

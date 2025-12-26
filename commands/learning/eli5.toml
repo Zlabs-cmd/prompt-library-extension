@@ -1,0 +1,12 @@
+prompt = """
+# Explain Like I'm 5 (ELI5)
+
+Explain the following complex technical concept in the simplest terms possible, as if explaining it to a five-year-old. Use:
+- Simple analogies from everyday life
+- No technical jargon
+- Short sentences and clear ideas
+- A focus on the "big picture" why it matters
+
+Topic to explain:
+{{args}}
+"""

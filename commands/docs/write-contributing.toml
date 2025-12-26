@@ -1,0 +1,16 @@
+prompt = """
+# Create Contribution Guidelines
+
+Generate a CONTRIBUTING.md file for the following project. Include:
+- Code of Conduct reference
+- How to report bugs
+- How to suggest enhancements
+- Development environment setup
+- Pull Request process (branching, testing, review)
+- Coding standards and style guide
+
+Project Context:
+{{args}}
+
+Make it welcoming and clear for new contributors.
+"""
