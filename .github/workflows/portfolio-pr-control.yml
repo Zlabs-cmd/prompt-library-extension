@@ -1,0 +1,17 @@
+name: Portfolio PR Control
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  merge_group:
+    types: [checks_requested]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  control:
+    uses: Zlabs-cmd/prompt-library-extension/.github/workflows/portfolio-pr-control-reusable.yml@ca40239a1b7506c0f4d61a3858e47fc752bd9822
+    secrets:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
