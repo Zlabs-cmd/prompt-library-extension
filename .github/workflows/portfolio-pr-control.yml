@@ -12,6 +12,6 @@ permissions:
 
 jobs:
   control:
-    uses: Zlabs-cmd/prompt-library-extension/.github/workflows/portfolio-pr-control-reusable.yml@d380bd9c50c4ef82adb399cedae8b3d373c5dc9c
+    uses: Zlabs-cmd/prompt-library-extension/.github/workflows/portfolio-pr-control-reusable.yml@51e041b54533d5fe01ec9ced151fa5c07cc6754c
     secrets:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
