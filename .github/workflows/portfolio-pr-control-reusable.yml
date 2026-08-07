@@ -267,7 +267,7 @@ jobs:
 
   merge_guard:
     needs: [classify, policy]
-    if: github.event_name == 'pull_request' && needs.policy.result == 'success'
+    if: ${{ always() && github.event_name == 'pull_request' && needs.policy.outputs.decision == 'PASS' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
