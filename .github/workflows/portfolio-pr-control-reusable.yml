@@ -267,7 +267,7 @@ jobs:
 
   merge_guard:
     needs: [classify, policy]
-    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false && needs.policy.result == 'success' && (needs.classify.outputs.risk == 'AM0' || needs.classify.outputs.risk == 'AM1' || needs.classify.outputs.risk == 'AM2')
+    if: github.event_name == 'pull_request' && needs.policy.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -277,10 +277,16 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       PR_NUMBER: ${{ github.event.pull_request.number }}
       EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      BASE_RISK: ${{ needs.classify.outputs.risk }}
     steps:
-      - name: Revalidate exact PR and opt-out boundary
+      - name: Revalidate risk, exact PR, and opt-out boundary
         run: |
           set -euo pipefail
+          case "$BASE_RISK" in
+            AM0|AM1|AM2) ;;
+            *) echo "Risk $BASE_RISK is not autonomously mergeable." >&2; exit 1 ;;
+          esac
+
           pr_json=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json state,isDraft,headRefOid,title,body,labels)
           state=$(printf '%s' "$pr_json" | jq -r '.state')
           draft=$(printf '%s' "$pr_json" | jq -r '.isDraft')
