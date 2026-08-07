@@ -6,6 +6,10 @@ on:
       OPENAI_API_KEY:
         required: false
 
+concurrency:
+  group: portfolio-pr-control-${{ github.repository }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   classify:
     if: github.event_name == 'pull_request'
@@ -27,12 +31,18 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
         run: |
           set -euo pipefail
           git diff --name-only "$BASE_SHA" "$HEAD_SHA" > "$RUNNER_TEMP/changed.txt"
+
           risk=AM2
           docs_only=true
           tests_only=true
+          high_risk=false
+
           while IFS= read -r file; do
             case "$file" in
               *.md|docs/*|.github/ISSUE_TEMPLATE/*|.github/PULL_REQUEST_TEMPLATE*) ;;
@@ -43,19 +53,29 @@ jobs:
               *) tests_only=false ;;
             esac
             case "$file" in
-              .github/workflows/*|.github/actions/*|infra/*|infrastructure/*|terraform/*|*/migrations/*|prisma/migrations/*|*/auth/*|*auth.*|*/security/*|*security.*|*/permissions/*|*/rbac/*|*/iam/*|*/billing/*|*/payment/*|*/payments/*|*/stripe/*|*.env*|*secrets*|*policy*) risk=AM3 ;;
+              .github/workflows/*|.github/actions/*|infra/*|infrastructure/*|terraform/*|*/migrations/*|prisma/migrations/*|*/auth/*|*auth.*|*/security/*|*security.*|*/permissions/*|*/rbac/*|*/iam/*|*/billing/*|*/payment/*|*/payments/*|*/stripe/*|*/legal/*|*/compliance/*|*/release/*|*.env*|*secrets*|*policy*) high_risk=true ;;
             esac
           done < "$RUNNER_TEMP/changed.txt"
-          if [ "$docs_only" = true ]; then
+
+          if [ "$high_risk" = true ]; then
+            risk=AM3
+          elif [ "$docs_only" = true ]; then
             risk=AM0
           elif [ "$tests_only" = true ]; then
             risk=AM1
           fi
+
+          metadata=$(printf '%s\n%s\n%s\n' "$PR_TITLE" "$PR_BODY" "$PR_LABELS" | tr '[:lower:]' '[:upper:]')
+          if printf '%s' "$metadata" | grep -Eq 'DO[ -]?NOT[ -]?(SHIP|MERGE)|NO[ -]?(AUTO|AUTOMATIC)[ -]?MERGE|NEVER[ -]?AUTO[ -]?MERGE|HUMAN[ -]?(APPROVAL|REVIEW)[ -]?REQUIRED|RELEASE[ -]?(OWNER|APPROVAL)|SECURITY[ -]?APPROVAL|FINANCE[ -]?APPROVAL|PRIVACY[ -]?APPROVAL'; then
+            risk=AM3
+          fi
+
           if [ "$risk" = AM0 ]; then
             agent_required=false
           else
             agent_required=true
           fi
+
           echo "risk=$risk" >> "$GITHUB_OUTPUT"
           echo "agent_required=$agent_required" >> "$GITHUB_OUTPUT"
           echo "### Portfolio classification" >> "$GITHUB_STEP_SUMMARY"
@@ -91,6 +111,7 @@ jobs:
         with:
           openai-api-key: ${{ env.OPENAI_API_KEY }}
           permission-profile: ':read-only'
+          safety-strategy: drop-sudo
           output-schema: |
             {"type":"object","properties":{"verdict":{"type":"string","enum":["PASS","FAIL","INSUFFICIENT_EVIDENCE"]},"risk":{"type":"string","enum":["AM0","AM1","AM2","AM3","AM4"]},"summary":{"type":"string"},"findings":{"type":"array","items":{"type":"string"}}},"required":["verdict","risk","summary","findings"],"additionalProperties":false}
           prompt: |
@@ -127,6 +148,7 @@ jobs:
         with:
           openai-api-key: ${{ env.OPENAI_API_KEY }}
           permission-profile: ':read-only'
+          safety-strategy: drop-sudo
           output-schema: |
             {"type":"object","properties":{"verdict":{"type":"string","enum":["PASS","FAIL","INSUFFICIENT_EVIDENCE"]},"risk":{"type":"string","enum":["AM0","AM1","AM2","AM3","AM4"]},"summary":{"type":"string"},"findings":{"type":"array","items":{"type":"string"}}},"required":["verdict","risk","summary","findings"],"additionalProperties":false}
           prompt: |
@@ -162,6 +184,7 @@ jobs:
         with:
           openai-api-key: ${{ env.OPENAI_API_KEY }}
           permission-profile: ':read-only'
+          safety-strategy: drop-sudo
           output-schema: |
             {"type":"object","properties":{"verdict":{"type":"string","enum":["PASS","FAIL","INSUFFICIENT_EVIDENCE"]},"risk":{"type":"string","enum":["AM0","AM1","AM2","AM3","AM4"]},"summary":{"type":"string"},"findings":{"type":"array","items":{"type":"string"}}},"required":["verdict","risk","summary","findings"],"additionalProperties":false}
           prompt: |
@@ -198,6 +221,7 @@ jobs:
           rank() { case "$1" in AM0) echo 0;; AM1) echo 1;; AM2) echo 2;; AM3) echo 3;; AM4) echo 4;; *) echo 4;; esac; }
           effective="$BASE_RISK"
           decision=PASS
+
           require_json_pass() {
             local available="$1" payload="$2" label="$3"
             if [ "$available" != true ] || [ -z "$payload" ]; then
@@ -211,9 +235,12 @@ jobs:
             if [ "$(rank "$agent_risk")" -gt "$(rank "$effective")" ]; then effective="$agent_risk"; fi
             if [ "$verdict" != PASS ]; then decision=BLOCKED; fi
           }
+
           case "$BASE_RISK" in
             AM0) ;;
-            AM1) require_json_pass "$CORRECTNESS_AVAILABLE" "$CORRECTNESS" correctness ;;
+            AM1)
+              require_json_pass "$CORRECTNESS_AVAILABLE" "$CORRECTNESS" correctness
+              ;;
             AM2)
               require_json_pass "$CORRECTNESS_AVAILABLE" "$CORRECTNESS" correctness
               require_json_pass "$SECURITY_AVAILABLE" "$SECURITY" security
@@ -227,7 +254,9 @@ jobs:
               decision=HUMAN_REQUIRED
               ;;
           esac
+
           if [ "$(rank "$effective")" -ge 3 ]; then decision=HUMAN_REQUIRED; fi
+
           echo "decision=$decision" >> "$GITHUB_OUTPUT"
           echo "effective_risk=$effective" >> "$GITHUB_OUTPUT"
           echo "### Portfolio PR gate" >> "$GITHUB_STEP_SUMMARY"
@@ -236,7 +265,7 @@ jobs:
           echo "Decision: **$decision**" >> "$GITHUB_STEP_SUMMARY"
           if [ "$decision" != PASS ]; then exit 1; fi
 
-  request_auto_merge:
+  merge_guard:
     needs: [classify, policy]
     if: github.event_name == 'pull_request' && github.event.pull_request.draft == false && needs.policy.result == 'success' && (needs.classify.outputs.risk == 'AM0' || needs.classify.outputs.risk == 'AM1' || needs.classify.outputs.risk == 'AM2')
     runs-on: ubuntu-latest
@@ -247,13 +276,47 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       PR_NUMBER: ${{ github.event.pull_request.number }}
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
     steps:
-      - name: Request native GitHub auto-merge
+      - name: Revalidate exact PR and opt-out boundary
         run: |
           set -euo pipefail
-          if gh pr merge "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --auto --squash; then
-            echo 'Native GitHub auto-merge requested; branch/ruleset requirements remain authoritative.' >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo 'Auto-merge could not be enabled. Failing closed: repository auto-merge or governance may require configuration.' >> "$GITHUB_STEP_SUMMARY"
+          pr_json=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json state,isDraft,headRefOid,title,body,labels)
+          state=$(printf '%s' "$pr_json" | jq -r '.state')
+          draft=$(printf '%s' "$pr_json" | jq -r '.isDraft')
+          head=$(printf '%s' "$pr_json" | jq -r '.headRefOid')
+          title=$(printf '%s' "$pr_json" | jq -r '.title // ""')
+          body=$(printf '%s' "$pr_json" | jq -r '.body // ""')
+          labels=$(printf '%s' "$pr_json" | jq -r '[.labels[].name] | join(" ")')
+
+          if [ "$state" != OPEN ] || [ "$draft" != false ]; then
+            echo 'PR is not an open, ready-for-review candidate.' >&2
             exit 1
           fi
+          if [ "$head" != "$EXPECTED_HEAD" ]; then
+            echo 'PR head moved after review; refusing stale merge.' >&2
+            exit 1
+          fi
+
+          metadata=$(printf '%s\n%s\n%s\n' "$title" "$body" "$labels" | tr '[:lower:]' '[:upper:]')
+          if printf '%s' "$metadata" | grep -Eq 'DO[ -]?NOT[ -]?(SHIP|MERGE)|NO[ -]?(AUTO|AUTOMATIC)[ -]?MERGE|NEVER[ -]?AUTO[ -]?MERGE|HUMAN[ -]?(APPROVAL|REVIEW)[ -]?REQUIRED|RELEASE[ -]?(OWNER|APPROVAL)|SECURITY[ -]?APPROVAL|FINANCE[ -]?APPROVAL|PRIVACY[ -]?APPROVAL'; then
+            echo 'Explicit human/release opt-out detected; refusing autonomous merge.' >&2
+            exit 1
+          fi
+
+      - name: Merge without bypassing GitHub governance
+        run: |
+          set -euo pipefail
+          if gh pr merge "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --auto --squash --match-head-commit "$EXPECTED_HEAD"; then
+            echo 'GitHub native auto-merge requested; repository protections remain authoritative.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          echo 'Native auto-merge unavailable; attempting a normal squash merge without --admin.' >> "$GITHUB_STEP_SUMMARY"
+          if gh pr merge "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --squash --match-head-commit "$EXPECTED_HEAD"; then
+            echo 'PR merged after GitHub accepted all applicable branch/ruleset requirements.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          echo 'GitHub rejected the merge. Failing closed; pending checks/reviews/rules remain authoritative.' >> "$GITHUB_STEP_SUMMARY"
+          exit 1
