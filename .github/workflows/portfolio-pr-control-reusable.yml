@@ -98,7 +98,23 @@ jobs:
     steps:
       - id: detect
         run: |
-          if [ -n "$OPENAI_API_KEY" ]; then echo 'available=true' >> "$GITHUB_OUTPUT"; else echo 'available=false' >> "$GITHUB_OUTPUT"; fi
+          if [ -n "$OPENAI_API_KEY" ]; then
+            echo 'available=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'available=false' >> "$GITHUB_OUTPUT"
+            {
+              echo "### ${GITHUB_JOB} did not run"
+              echo
+              echo "\`OPENAI_API_KEY\` is not configured for \`${GITHUB_REPOSITORY}\`, so this"
+              echo "check analysed nothing. It fails deliberately: a green check here would"
+              echo "assert an agent review that never happened."
+              echo
+              echo "To restore the review, add the \`OPENAI_API_KEY\` Actions secret to the"
+              echo "repository. To retire it, drop this job from the workflow."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error title=Agent review unavailable::${GITHUB_JOB} performed no review: OPENAI_API_KEY is not configured for ${GITHUB_REPOSITORY}."
+            exit 1
+          fi
       - if: env.OPENAI_API_KEY != ''
         uses: actions/checkout@v5
         with:
@@ -135,7 +151,23 @@ jobs:
     steps:
       - id: detect
         run: |
-          if [ -n "$OPENAI_API_KEY" ]; then echo 'available=true' >> "$GITHUB_OUTPUT"; else echo 'available=false' >> "$GITHUB_OUTPUT"; fi
+          if [ -n "$OPENAI_API_KEY" ]; then
+            echo 'available=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'available=false' >> "$GITHUB_OUTPUT"
+            {
+              echo "### ${GITHUB_JOB} did not run"
+              echo
+              echo "\`OPENAI_API_KEY\` is not configured for \`${GITHUB_REPOSITORY}\`, so this"
+              echo "check analysed nothing. It fails deliberately: a green check here would"
+              echo "assert an agent review that never happened."
+              echo
+              echo "To restore the review, add the \`OPENAI_API_KEY\` Actions secret to the"
+              echo "repository. To retire it, drop this job from the workflow."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error title=Agent review unavailable::${GITHUB_JOB} performed no review: OPENAI_API_KEY is not configured for ${GITHUB_REPOSITORY}."
+            exit 1
+          fi
       - if: env.OPENAI_API_KEY != ''
         uses: actions/checkout@v5
         with:
@@ -171,7 +203,23 @@ jobs:
     steps:
       - id: detect
         run: |
-          if [ -n "$OPENAI_API_KEY" ]; then echo 'available=true' >> "$GITHUB_OUTPUT"; else echo 'available=false' >> "$GITHUB_OUTPUT"; fi
+          if [ -n "$OPENAI_API_KEY" ]; then
+            echo 'available=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'available=false' >> "$GITHUB_OUTPUT"
+            {
+              echo "### ${GITHUB_JOB} did not run"
+              echo
+              echo "\`OPENAI_API_KEY\` is not configured for \`${GITHUB_REPOSITORY}\`, so this"
+              echo "check analysed nothing. It fails deliberately: a green check here would"
+              echo "assert an agent review that never happened."
+              echo
+              echo "To restore the review, add the \`OPENAI_API_KEY\` Actions secret to the"
+              echo "repository. To retire it, drop this job from the workflow."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error title=Agent review unavailable::${GITHUB_JOB} performed no review: OPENAI_API_KEY is not configured for ${GITHUB_REPOSITORY}."
+            exit 1
+          fi
       - if: env.OPENAI_API_KEY != ''
         uses: actions/checkout@v5
         with:
