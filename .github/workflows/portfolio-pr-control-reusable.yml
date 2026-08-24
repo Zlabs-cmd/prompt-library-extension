@@ -36,7 +36,12 @@ jobs:
           PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
         run: |
           set -euo pipefail
-          git diff --name-only "$BASE_SHA" "$HEAD_SHA" > "$RUNNER_TEMP/changed.txt"
+          # Merge-base (three-dot) diff: grade ONLY what this PR changes. A two-dot
+          # diff against the raw base commit also includes every commit main gained
+          # after the branch was cut, so a PR was graded AM3 for OTHER PRs' auth/ or
+          # migrations/ files merged in the meantime - on any day with concurrent
+          # merges, most PRs. This matches the file list GitHub itself shows.
+          git diff --name-only "$(git merge-base "$BASE_SHA" "$HEAD_SHA")" "$HEAD_SHA" > "$RUNNER_TEMP/changed.txt"
 
           risk=AM2
           docs_only=true
