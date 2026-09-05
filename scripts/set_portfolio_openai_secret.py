@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Securely install OPENAI_API_KEY across the Zlabs-cmd portfolio.
+"""Securely install OPENAI_API_KEY across the active Zlabs-cmd portfolio.
 
 Requires:
   - Python 3.10+
@@ -17,30 +17,34 @@ import shutil
 import subprocess
 import sys
 
+# Keep this list limited to active repositories. Archived repositories are
+# intentionally excluded so secret rotation does not reactivate retired systems.
 REPOSITORIES = [
-    "Zlabs-cmd/prompt-library-extension",
-    "Zlabs-cmd/golden-moving-platform",
-    "Zlabs-cmd/cruise-line-order-au",
-    "Zlabs-cmd/ClosedLab-Landing",
-    "Zlabs-cmd/Moving-Operations-Backend-Application",
-    "Zlabs-cmd/real-estate-leads",
     "Zlabs-cmd/Insurance",
-    "Zlabs-cmd/Mezuzah-Investments-and-Banking",
-    "Zlabs-cmd/ascendants_marketing_app",
-    "Zlabs-cmd/WareHouse",
-    "Zlabs-cmd/Priority-Moving-App",
-    "Zlabs-cmd/LowesVanlines-LandingPage",
-    "Zlabs-cmd/MobDial-Platform",
-    "Zlabs-cmd/ClosedLab-Workspace",
     "Zlabs-cmd/timeless-relationshi",
-    "Zlabs-cmd/Priv-MobDial-Operations-Dashboard",
+    "Zlabs-cmd/prompt-library-extension",
+    "Zlabs-cmd/WareHouse",
+    "Zlabs-cmd/real-estate-leads",
+    "Zlabs-cmd/golden-moving-platform",
     "Zlabs-cmd/golden-moving-llc",
-    "Zlabs-cmd/FreightLine",
     "Zlabs-cmd/pmg-ops-dashboard",
+    "Zlabs-cmd/ascendants_marketing_app",
+    "Zlabs-cmd/SilveraOps-SaaS",
+    "Zlabs-cmd/Priority-Moving-App",
+    "Zlabs-cmd/Moving-Operations-Backend-Application",
     "Zlabs-cmd/Budget-Movers",
     "Zlabs-cmd/Silv-Website",
+    "Zlabs-cmd/MobDial-Platform",
+    "Zlabs-cmd/Priv-MobDial-Operations-Dashboard",
+    "Zlabs-cmd/Mezuzah-Investments-and-Banking",
+    "Zlabs-cmd/Boarder_Dispatch",
+    "Zlabs-cmd/ClosedLab-Workspace",
+    "Zlabs-cmd/ClosedLab-Landing",
     "Zlabs-cmd/lucas_dispatch",
-    "Zlabs-cmd/SilveraOps-SaaS",
+    "Zlabs-cmd/LowesVanlines-LandingPage",
+    "Zlabs-cmd/closedlab-design-system",
+    "Zlabs-cmd/FLUX-Financial-Lifecycle-Unified-Xchange",
+    "Zlabs-cmd/Verity-Assurance",
 ]
 
 SECRET_NAME = "OPENAI_API_KEY"
