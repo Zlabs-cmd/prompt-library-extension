@@ -1,0 +1,4 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "ignoreCommand": "case \"$VERCEL_ENV:$VERCEL_GIT_COMMIT_REF\" in production:*|*:main|*:master|*:production|*:release/*) exit 1 ;; *:diag/*|*:bisect/*|*:debug/*|*:test/*|*:experiment/*|*:agent/*|*:chore/diag-*|*:*-retry|*:*-retry/*) exit 0 ;; esac; git log -1 --pretty=%B | grep -Eq '\\[(skip ci|skip vercel)\\]' && exit 0 || exit 1"
+}
