@@ -170,7 +170,18 @@ jobs:
           mkdir -p "$REVIEW_DIR"
           base="$(git merge-base "$BASE_SHA" "$HEAD_SHA")"
           git diff --no-ext-diff --no-textconv --name-status "$base" "$HEAD_SHA" > "$REVIEW_DIR/changed-files.txt"
-          git diff --no-ext-diff --no-textconv "$base" "$HEAD_SHA" > "$REVIEW_DIR/pr.diff"
+          git diff --no-ext-diff --no-textconv "$base" "$HEAD_SHA" > "$RUNNER_TEMP/pr.diff"
+          # The reviewer gets the diff in parts of at most 40 KB. One read returns a file
+          # that size whole. It cuts a larger one short without saying so and refuses one
+          # over 256 KB, so a reviewer handed a single large diff reviews a fragment of it.
+          split --line-bytes=40000 --numeric-suffixes=1 --suffix-length=3 "$RUNNER_TEMP/pr.diff" "$REVIEW_DIR/pr.diff.part-"
+          [ -e "$REVIEW_DIR/pr.diff.part-001" ] || : > "$REVIEW_DIR/pr.diff.part-001"
+          parts="$(find "$REVIEW_DIR" -name 'pr.diff.part-*' | wc -l)"
+          if [ "$parts" -eq 1 ]; then
+            diff_files="one file, $REVIEW_DIR/pr.diff.part-001"
+          else
+            diff_files="$parts files that each fit one read, $REVIEW_DIR/pr.diff.part-001 to $REVIEW_DIR/pr.diff.part-$(printf '%03d' "$parts")"
+          fi
           # --restricted + --tools: no shell, no network, no writes, and none of the
           # checkout's own .claude/ settings, hooks, MCP servers, skills or CLAUDE.md
           # are loaded. Without it a pull request could run commands on this runner.
@@ -181,7 +192,7 @@ jobs:
           checkout="$PWD"
           cd "$REVIEW_DIR"
           claude -p "$REVIEW_PROMPT
-          The pull request merged into its base branch is checked out at $checkout; paths in the diff are relative to that directory. The PR diff is in $REVIEW_DIR/pr.diff and the list of changed files is in $REVIEW_DIR/changed-files.txt." \
+          The pull request merged into its base branch is checked out at $checkout; paths in the diff are relative to that directory. The PR diff is $(wc -l < "$RUNNER_TEMP/pr.diff") lines long, in $diff_files. The list of changed files is in $REVIEW_DIR/changed-files.txt. Return PASS only if you have read every part of the diff. If you have not, return INSUFFICIENT_EVIDENCE and say in the summary which parts you did not read." \
             --restricted --tools "Read,Glob,Grep" --permission-mode dontAsk --add-dir "$checkout" \
             --model "$REVIEW_MODEL" --max-turns "$REVIEW_MAX_TURNS" --max-budget-usd "$REVIEW_MAX_BUDGET_USD" \
             --output-format json --json-schema "$REVIEW_SCHEMA" --no-session-persistence \
@@ -301,7 +312,18 @@ jobs:
           mkdir -p "$REVIEW_DIR"
           base="$(git merge-base "$BASE_SHA" "$HEAD_SHA")"
           git diff --no-ext-diff --no-textconv --name-status "$base" "$HEAD_SHA" > "$REVIEW_DIR/changed-files.txt"
-          git diff --no-ext-diff --no-textconv "$base" "$HEAD_SHA" > "$REVIEW_DIR/pr.diff"
+          git diff --no-ext-diff --no-textconv "$base" "$HEAD_SHA" > "$RUNNER_TEMP/pr.diff"
+          # The reviewer gets the diff in parts of at most 40 KB. One read returns a file
+          # that size whole. It cuts a larger one short without saying so and refuses one
+          # over 256 KB, so a reviewer handed a single large diff reviews a fragment of it.
+          split --line-bytes=40000 --numeric-suffixes=1 --suffix-length=3 "$RUNNER_TEMP/pr.diff" "$REVIEW_DIR/pr.diff.part-"
+          [ -e "$REVIEW_DIR/pr.diff.part-001" ] || : > "$REVIEW_DIR/pr.diff.part-001"
+          parts="$(find "$REVIEW_DIR" -name 'pr.diff.part-*' | wc -l)"
+          if [ "$parts" -eq 1 ]; then
+            diff_files="one file, $REVIEW_DIR/pr.diff.part-001"
+          else
+            diff_files="$parts files that each fit one read, $REVIEW_DIR/pr.diff.part-001 to $REVIEW_DIR/pr.diff.part-$(printf '%03d' "$parts")"
+          fi
           # --restricted + --tools: no shell, no network, no writes, and none of the
           # checkout's own .claude/ settings, hooks, MCP servers, skills or CLAUDE.md
           # are loaded. Without it a pull request could run commands on this runner.
@@ -312,7 +334,7 @@ jobs:
           checkout="$PWD"
           cd "$REVIEW_DIR"
           claude -p "$REVIEW_PROMPT
-          The pull request merged into its base branch is checked out at $checkout; paths in the diff are relative to that directory. The PR diff is in $REVIEW_DIR/pr.diff and the list of changed files is in $REVIEW_DIR/changed-files.txt." \
+          The pull request merged into its base branch is checked out at $checkout; paths in the diff are relative to that directory. The PR diff is $(wc -l < "$RUNNER_TEMP/pr.diff") lines long, in $diff_files. The list of changed files is in $REVIEW_DIR/changed-files.txt. Return PASS only if you have read every part of the diff. If you have not, return INSUFFICIENT_EVIDENCE and say in the summary which parts you did not read." \
             --restricted --tools "Read,Glob,Grep" --permission-mode dontAsk --add-dir "$checkout" \
             --model "$REVIEW_MODEL" --max-turns "$REVIEW_MAX_TURNS" --max-budget-usd "$REVIEW_MAX_BUDGET_USD" \
             --output-format json --json-schema "$REVIEW_SCHEMA" --no-session-persistence \
@@ -432,7 +454,18 @@ jobs:
           mkdir -p "$REVIEW_DIR"
           base="$(git merge-base "$BASE_SHA" "$HEAD_SHA")"
           git diff --no-ext-diff --no-textconv --name-status "$base" "$HEAD_SHA" > "$REVIEW_DIR/changed-files.txt"
-          git diff --no-ext-diff --no-textconv "$base" "$HEAD_SHA" > "$REVIEW_DIR/pr.diff"
+          git diff --no-ext-diff --no-textconv "$base" "$HEAD_SHA" > "$RUNNER_TEMP/pr.diff"
+          # The reviewer gets the diff in parts of at most 40 KB. One read returns a file
+          # that size whole. It cuts a larger one short without saying so and refuses one
+          # over 256 KB, so a reviewer handed a single large diff reviews a fragment of it.
+          split --line-bytes=40000 --numeric-suffixes=1 --suffix-length=3 "$RUNNER_TEMP/pr.diff" "$REVIEW_DIR/pr.diff.part-"
+          [ -e "$REVIEW_DIR/pr.diff.part-001" ] || : > "$REVIEW_DIR/pr.diff.part-001"
+          parts="$(find "$REVIEW_DIR" -name 'pr.diff.part-*' | wc -l)"
+          if [ "$parts" -eq 1 ]; then
+            diff_files="one file, $REVIEW_DIR/pr.diff.part-001"
+          else
+            diff_files="$parts files that each fit one read, $REVIEW_DIR/pr.diff.part-001 to $REVIEW_DIR/pr.diff.part-$(printf '%03d' "$parts")"
+          fi
           # --restricted + --tools: no shell, no network, no writes, and none of the
           # checkout's own .claude/ settings, hooks, MCP servers, skills or CLAUDE.md
           # are loaded. Without it a pull request could run commands on this runner.
@@ -443,7 +476,7 @@ jobs:
           checkout="$PWD"
           cd "$REVIEW_DIR"
           claude -p "$REVIEW_PROMPT
-          The pull request merged into its base branch is checked out at $checkout; paths in the diff are relative to that directory. The PR diff is in $REVIEW_DIR/pr.diff and the list of changed files is in $REVIEW_DIR/changed-files.txt." \
+          The pull request merged into its base branch is checked out at $checkout; paths in the diff are relative to that directory. The PR diff is $(wc -l < "$RUNNER_TEMP/pr.diff") lines long, in $diff_files. The list of changed files is in $REVIEW_DIR/changed-files.txt. Return PASS only if you have read every part of the diff. If you have not, return INSUFFICIENT_EVIDENCE and say in the summary which parts you did not read." \
             --restricted --tools "Read,Glob,Grep" --permission-mode dontAsk --add-dir "$checkout" \
             --model "$REVIEW_MODEL" --max-turns "$REVIEW_MAX_TURNS" --max-budget-usd "$REVIEW_MAX_BUDGET_USD" \
             --output-format json --json-schema "$REVIEW_SCHEMA" --no-session-persistence \
