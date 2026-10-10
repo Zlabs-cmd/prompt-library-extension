@@ -606,6 +606,20 @@ jobs:
       EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
       BASE_RISK: ${{ needs.classify.outputs.risk }}
     steps:
+      - name: Require a base-branch rule that holds merges for status checks
+        run: |
+          set -euo pipefail
+          # This job does not wait for CI. GitHub does, and only where a rule on the
+          # base branch requires status checks. Without one, the merge below would
+          # land on the reviewers' verdicts alone, before CI and e2e have reported.
+          base=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json baseRefName --jq '.baseRefName')
+          protection=$(gh api "repos/$GITHUB_REPOSITORY/branches/$base" --jq '.protection.required_status_checks | select(.enforcement_level != "off") | (.contexts // []) + (.checks // []) | length')
+          rulesets=$(gh api "repos/$GITHUB_REPOSITORY/rules/branches/$base" --jq '[.[] | select(.type == "required_status_checks") | .parameters.required_status_checks[]?] | length')
+          if [ "$(( ${protection:-0} + rulesets ))" -eq 0 ]; then
+            echo "::error title=No autonomous merge::No rule on $base requires status checks, so GitHub would merge before CI has reported. Add a branch rule that requires them, or merge this pull request by hand."
+            exit 1
+          fi
+
       - name: Revalidate risk, exact PR, and opt-out boundary
         run: |
           set -euo pipefail
