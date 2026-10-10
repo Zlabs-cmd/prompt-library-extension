@@ -174,9 +174,15 @@ jobs:
           # --restricted + --tools: no shell, no network, no writes, and none of the
           # checkout's own .claude/ settings, hooks, MCP servers, skills or CLAUDE.md
           # are loaded. Without it a pull request could run commands on this runner.
+          # The reviewer also starts outside the checkout. Started inside it, Claude
+          # Code attaches the git status to the conversation, and with it the pull
+          # request's own commit subjects; and the checkout's CLAUDE.md and AGENTS.md
+          # would load if --restricted ever stopped preventing that.
+          checkout="$PWD"
+          cd "$REVIEW_DIR"
           claude -p "$REVIEW_PROMPT
-          The working directory is the pull request merged into its base branch. The PR diff is in $REVIEW_DIR/pr.diff and the list of changed files is in $REVIEW_DIR/changed-files.txt." \
-            --restricted --tools "Read,Glob,Grep" --permission-mode dontAsk --add-dir "$REVIEW_DIR" \
+          The pull request merged into its base branch is checked out at $checkout; paths in the diff are relative to that directory. The PR diff is in $REVIEW_DIR/pr.diff and the list of changed files is in $REVIEW_DIR/changed-files.txt." \
+            --restricted --tools "Read,Glob,Grep" --permission-mode dontAsk --add-dir "$checkout" \
             --model "$REVIEW_MODEL" --max-turns "$REVIEW_MAX_TURNS" --max-budget-usd "$REVIEW_MAX_BUDGET_USD" \
             --output-format json --json-schema "$REVIEW_SCHEMA" --no-session-persistence \
             < /dev/null > "$RUNNER_TEMP/review.json" || true
@@ -299,9 +305,15 @@ jobs:
           # --restricted + --tools: no shell, no network, no writes, and none of the
           # checkout's own .claude/ settings, hooks, MCP servers, skills or CLAUDE.md
           # are loaded. Without it a pull request could run commands on this runner.
+          # The reviewer also starts outside the checkout. Started inside it, Claude
+          # Code attaches the git status to the conversation, and with it the pull
+          # request's own commit subjects; and the checkout's CLAUDE.md and AGENTS.md
+          # would load if --restricted ever stopped preventing that.
+          checkout="$PWD"
+          cd "$REVIEW_DIR"
           claude -p "$REVIEW_PROMPT
-          The working directory is the pull request merged into its base branch. The PR diff is in $REVIEW_DIR/pr.diff and the list of changed files is in $REVIEW_DIR/changed-files.txt." \
-            --restricted --tools "Read,Glob,Grep" --permission-mode dontAsk --add-dir "$REVIEW_DIR" \
+          The pull request merged into its base branch is checked out at $checkout; paths in the diff are relative to that directory. The PR diff is in $REVIEW_DIR/pr.diff and the list of changed files is in $REVIEW_DIR/changed-files.txt." \
+            --restricted --tools "Read,Glob,Grep" --permission-mode dontAsk --add-dir "$checkout" \
             --model "$REVIEW_MODEL" --max-turns "$REVIEW_MAX_TURNS" --max-budget-usd "$REVIEW_MAX_BUDGET_USD" \
             --output-format json --json-schema "$REVIEW_SCHEMA" --no-session-persistence \
             < /dev/null > "$RUNNER_TEMP/review.json" || true
@@ -424,9 +436,15 @@ jobs:
           # --restricted + --tools: no shell, no network, no writes, and none of the
           # checkout's own .claude/ settings, hooks, MCP servers, skills or CLAUDE.md
           # are loaded. Without it a pull request could run commands on this runner.
+          # The reviewer also starts outside the checkout. Started inside it, Claude
+          # Code attaches the git status to the conversation, and with it the pull
+          # request's own commit subjects; and the checkout's CLAUDE.md and AGENTS.md
+          # would load if --restricted ever stopped preventing that.
+          checkout="$PWD"
+          cd "$REVIEW_DIR"
           claude -p "$REVIEW_PROMPT
-          The working directory is the pull request merged into its base branch. The PR diff is in $REVIEW_DIR/pr.diff and the list of changed files is in $REVIEW_DIR/changed-files.txt." \
-            --restricted --tools "Read,Glob,Grep" --permission-mode dontAsk --add-dir "$REVIEW_DIR" \
+          The pull request merged into its base branch is checked out at $checkout; paths in the diff are relative to that directory. The PR diff is in $REVIEW_DIR/pr.diff and the list of changed files is in $REVIEW_DIR/changed-files.txt." \
+            --restricted --tools "Read,Glob,Grep" --permission-mode dontAsk --add-dir "$checkout" \
             --model "$REVIEW_MODEL" --max-turns "$REVIEW_MAX_TURNS" --max-budget-usd "$REVIEW_MAX_BUDGET_USD" \
             --output-format json --json-schema "$REVIEW_SCHEMA" --no-session-persistence \
             < /dev/null > "$RUNNER_TEMP/review.json" || true
