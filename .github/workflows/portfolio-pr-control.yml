@@ -12,6 +12,6 @@ permissions:
 
 jobs:
   control:
-    uses: Zlabs-cmd/prompt-library-extension/.github/workflows/portfolio-pr-control-reusable.yml@196e739ca97fdfd78e1be447aac2e1048c442469
+    uses: Zlabs-cmd/prompt-library-extension/.github/workflows/portfolio-pr-control-reusable.yml@fc7bfa10ffe53e9a26bf2b8c32029823be2cdc0d
     secrets:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
