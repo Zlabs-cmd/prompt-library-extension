@@ -17,6 +17,8 @@ env:
   # cover; `claude -p` with an API key bills as Agent SDK, which it does.
   CLAUDE_CODE_VERSION: "2.1.296"
   REVIEW_MODEL: claude-sonnet-5-5
+  # Draft pull requests are classified but not reviewed (see the job conditions):
+  # every push to a draft would otherwise cost up to three model reviews.
   # Caps are per reviewer, per run. A review that hits either one fails closed (job red).
   REVIEW_MAX_TURNS: "60"
   REVIEW_MAX_BUDGET_USD: "1.00"
@@ -48,6 +50,7 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
           PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+          PR_DRAFT: ${{ github.event.pull_request.draft }}
         run: |
           set -euo pipefail
           # Merge-base (three-dot) diff: grade ONLY what this PR changes. A two-dot
@@ -99,12 +102,15 @@ jobs:
           echo "agent_required=$agent_required" >> "$GITHUB_OUTPUT"
           echo "### Portfolio classification" >> "$GITHUB_STEP_SUMMARY"
           echo "Risk: **$risk**" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$PR_DRAFT" = true ]; then
+            echo 'Draft: agent reviews and the policy gate run once this pull request is marked ready for review.' >> "$GITHUB_STEP_SUMMARY"
+          fi
           echo 'Changed files:' >> "$GITHUB_STEP_SUMMARY"
           sed 's/^/- `/' "$RUNNER_TEMP/changed.txt" | sed 's/$/`/' >> "$GITHUB_STEP_SUMMARY"
 
   agent_correctness:
     needs: classify
-    if: github.event_name == 'pull_request' && needs.classify.outputs.agent_required == 'true'
+    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false && needs.classify.outputs.agent_required == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -230,7 +236,7 @@ jobs:
 
   agent_security:
     needs: classify
-    if: github.event_name == 'pull_request' && (needs.classify.outputs.risk == 'AM2' || needs.classify.outputs.risk == 'AM3')
+    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false && (needs.classify.outputs.risk == 'AM2' || needs.classify.outputs.risk == 'AM3')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -355,7 +361,7 @@ jobs:
 
   agent_reliability_finops:
     needs: classify
-    if: github.event_name == 'pull_request' && (needs.classify.outputs.risk == 'AM2' || needs.classify.outputs.risk == 'AM3')
+    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false && (needs.classify.outputs.risk == 'AM2' || needs.classify.outputs.risk == 'AM3')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -479,7 +485,7 @@ jobs:
           exit 1
 
   policy:
-    if: always()
+    if: ${{ always() && !(github.event_name == 'pull_request' && github.event.pull_request.draft) }}
     needs:
       [classify, agent_correctness, agent_security, agent_reliability_finops]
     runs-on: ubuntu-latest
